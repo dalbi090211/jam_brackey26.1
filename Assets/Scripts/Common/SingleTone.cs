@@ -11,7 +11,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 instance = (T)FindAnyObjectByType(typeof(T));
 
                 if (instance == null)
-                    Debug.LogError("No object of " + typeof(T).Name + " is no found");
+                    Debug.Log("No object of " + typeof(T).Name + " is no found");
             }
             return instance;
         }

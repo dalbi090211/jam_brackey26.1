@@ -12,22 +12,20 @@ public enum StrangeState
     LowerDifficulty
 }
 
-[System.Serializable]
-public class FloatArray
-{
-    public float[] values;
-}
-
 public class StrangeManager : Singleton<StrangeManager>
 {
     public const int STRANGE_COUNT = 4;
     public const int STAGE_COUNT = 1;
+    [SerializeField] List<StrangeState> startState;
 
     [SerializeField] private Slider strangeSlider;
-    [SerializeField] private TextMeshProUGUI strangeText;
     [SerializeField] PlayerMovement playerMovement;
-    [SerializeField] List<FloatArray> sceneStrangeTimer;
-    [SerializeField] List<StrangeState> startState;
+    [SerializeField] private GameObject strangeText;
+    [SerializeField] private GameObject gameClearCanvas;
+    [SerializeField] private ParticleSystem strangeEffectParticle;
+    [SerializeField] private int moveFreq;
+    [SerializeField] private float textRotateSpeed;
+    [SerializeField] private float targetZ;
 
     protected override void Awake()
     {
@@ -36,10 +34,19 @@ public class StrangeManager : Singleton<StrangeManager>
 
     private void Start()
     {
-        
+        strangeText.SetActive(false);
+        gameClearCanvas.SetActive(false);
     }
 
-    public void Reset()
+    public void StageClear()
+    {
+        Debug.Log("Stage Clear");
+        SceneLoader.Instance.saveMaxReach(SceneController.Instance.CurStage+1);
+        activeClearCanvas();
+        resetAll();
+    }
+
+    private void resetAll()
     {
         resetGravity();
         resetEnhance();
@@ -63,7 +70,7 @@ public class StrangeManager : Singleton<StrangeManager>
         for(int i = 1; i < STRANGE_COUNT - 1; i++)
         {
             int randomState = Random.Range(0, STRANGE_COUNT);
-            while ((StrangeState)randomState != StrangeState.Gravity && !strangeQueue.Contains((StrangeState)randomState))
+            while ((StrangeState)randomState == StrangeState.Gravity || strangeQueue.Contains((StrangeState)randomState))
             {
                 randomState = Random.Range(0, STRANGE_COUNT);
             }
@@ -73,7 +80,8 @@ public class StrangeManager : Singleton<StrangeManager>
 
         for(int i = 0; i < STRANGE_COUNT; i++)
         {
-            yield return Timer(sceneStrangeTimer[SceneController.Instance.CurStage].values[i]);
+            yield return Timer(SceneController.Instance.getStrangeTimer(i));
+            yield return strangeEffect();
             startStrange(strangeQueue.Dequeue());
         }
     }
@@ -85,9 +93,35 @@ public class StrangeManager : Singleton<StrangeManager>
         {
             timer += Time.deltaTime;
             strangeSlider.value = timer / time;
-            strangeText.text = string.Format("{0:0.0} / {1:0.0}", timer, time);
+            // strangeText.text = string.Format("{0:0.0} / {1:0.0}", timer, time);
             yield return null;
         }
+    }
+
+    private IEnumerator strangeEffect()
+    {
+        strangeEffectParticle.Play();
+        strangeText.SetActive(true);
+        var rt = strangeText.transform; // UI면 RectTransform으로 받아도 OK
+
+        int count = 0;
+        while (count < moveFreq)
+        {
+            float target = (count % 2 == 0) ? targetZ : -targetZ;
+
+            while (Mathf.Abs(Mathf.DeltaAngle(rt.localEulerAngles.z, target)) > 0.1f)
+            {
+                float step = textRotateSpeed * Time.deltaTime;
+                float newZ = Mathf.MoveTowardsAngle(rt.localEulerAngles.z, target, step);
+                var e = rt.localEulerAngles;
+                e.z = newZ;
+                rt.localEulerAngles = e;
+
+                yield return null;
+            }
+            count++;
+        }
+        strangeText.SetActive(false);
     }
 
     private void startStrange(StrangeState state)
@@ -111,5 +145,10 @@ public class StrangeManager : Singleton<StrangeManager>
                 SceneController.Instance.lowerDifficulty();
                 break;
         }
+    }
+
+    private void activeClearCanvas()
+    {
+        gameClearCanvas.SetActive(true);
     }
 }

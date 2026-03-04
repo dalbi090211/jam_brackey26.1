@@ -5,6 +5,7 @@ public abstract class SceneInfo : MonoBehaviour
 {
     public static readonly Color32 blueColor = new Color32(0, 0, 255, 255);
     public static readonly Color32 blackColor = new Color32(0, 0, 0, 255);
+    public static readonly Color32 grayColor = new Color32(178, 178, 178, 255);
     [SerializeField] public StrangeState startState;
     [SerializeField] public List<int> strangeTimers = new List<int>();
     public abstract void initializeGravity();

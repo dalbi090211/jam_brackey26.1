@@ -7,13 +7,14 @@ public class NormalScene : SceneInfo
 {
     [SerializeField] private List<GameObject> difficultyObjects;
     [SerializeField] private Light gravityLight;
-    private float targetIntensity = 40f;
+    private float targetIntensity = 150f;
     [SerializeField] private CinemachineCamera firstCamera;
     [SerializeField] private CinemachineCamera secondCamera;
     private PlayerMovement playerMovement;
     private Coroutine gravityCoroutine;
     private float waitGraivityTime = 2f;
-    private float gravityTimerLimit = 5f;
+    private float gravityTimerLimit = 3f;
+    private float restGraivityTime = 2f;
 
     private void Awake()
     {
@@ -22,6 +23,7 @@ public class NormalScene : SceneInfo
     }
     public override void initializeGravity()
     {
+        Debug.Log("Initialize Gravity");
         gravityCoroutine = StartCoroutine(bloomGravity());
     }
     private IEnumerator bloomGravity()
@@ -30,34 +32,36 @@ public class NormalScene : SceneInfo
         
         while (true)
         {
+            timer = 0f;
             while(timer < gravityTimerLimit)
             {
                 gravityLight.intensity = Mathf.Lerp(0f, targetIntensity, timer / gravityTimerLimit);
                 timer += Time.deltaTime;
                 yield return null;
             }
-            timer = 0f;
             playerMovement.chnageGravity();
             yield return new WaitForSeconds(waitGraivityTime);
+            playerMovement.chnageGravity();
+            timer = 0f;
             while(timer < gravityTimerLimit)
             {
-                gravityLight.intensity = Mathf.Lerp(0f, targetIntensity, timer / gravityTimerLimit);
+                gravityLight.intensity = Mathf.Lerp(targetIntensity, 0f, timer / gravityTimerLimit);
                 timer += Time.deltaTime;
                 yield return null;
             }
-            timer = 0f;
-            playerMovement.chnageGravity();
-            yield return new WaitForSeconds(waitGraivityTime);
+            yield return new WaitForSeconds(restGraivityTime);
         }
     }
 
     public override void transCamera()
     {
-        
+        Debug.Log("Trans Camera");
+        firstCamera.Priority = 0;
+        secondCamera.Priority = 10;
     }
 
     public override void lowerDifficulty()
     {
-        
+        Debug.Log("Lower Difficulty");
     }
 }

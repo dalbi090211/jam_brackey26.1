@@ -53,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
     }
     public void enhanceForce()
     {
+        Debug.Log("Enhance Jump Force");
         curJumpForce = enhanceJumpForce;
     }
     public void resetMove()
