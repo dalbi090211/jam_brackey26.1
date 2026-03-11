@@ -39,9 +39,9 @@ public class NormalScene : SceneInfo
                 timer += Time.deltaTime;
                 yield return null;
             }
-            playerMovement.chnageGravity();
+            // playerMovement.chnageGravity();
             yield return new WaitForSeconds(waitGraivityTime);
-            playerMovement.chnageGravity();
+            // playerMovement.chnageGravity();
             timer = 0f;
             while(timer < gravityTimerLimit)
             {
@@ -53,11 +53,12 @@ public class NormalScene : SceneInfo
         }
     }
 
-    public override void transCamera()
+    public override void transCamera()  //둘이 같으면 안돌아감
     {
         Debug.Log("Trans Camera");
-        firstCamera.Priority = 0;
-        secondCamera.Priority = 10;
+        int temp = firstCamera.Priority;
+        firstCamera.Priority = secondCamera.Priority;
+        secondCamera.Priority = temp;
     }
 
     public override void lowerDifficulty()

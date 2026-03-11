@@ -8,7 +8,7 @@ public enum StrangeState
 {
     Gravity,
     Enhance,
-    View,
+    TransDim,
     LowerDifficulty
 }
 
@@ -133,11 +133,12 @@ public class StrangeManager : Singleton<StrangeManager>
                 break;
 
             case StrangeState.Enhance:
-                playerMovement.enhanceForce();
+                // Movement.enhance
                 break;
 
-            case StrangeState.View:
-                playerMovement.chgMove();
+            case StrangeState.TransDim:
+                playerMovement.ToggleDimension();
+                DimensionManager.Instance.TransDim();
                 SceneController.Instance.transCamera();
                 break;
 
