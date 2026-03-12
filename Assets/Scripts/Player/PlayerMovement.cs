@@ -56,6 +56,8 @@ public class PlayerMovement : MonoBehaviour
         move2D.gameObject.SetActive(false);
         move3D.gameObject.SetActive(true);
         curMovement = move3D;
+
+        // move3D.gameObject.transform.postion = move2D.gameObject.transform.postion;
     }
 
     public void ToggleDimension()
@@ -64,5 +66,5 @@ public class PlayerMovement : MonoBehaviour
         else Set2DMode();
     }
 
-    
+
 }

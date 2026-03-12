@@ -15,7 +15,6 @@ public class Movement3D : Movement
     protected override void Awake()
     {
         base.Awake();
-
         if (rb == null)
             rb = GetComponent<Rigidbody>();
 

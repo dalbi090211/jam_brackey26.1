@@ -20,7 +20,7 @@ public class Movement2D : Movement
 
     private void FixedUpdate()
     {
-        ApplyGravity();
+        // ApplyGravity();
     }
 
     public override void ApplyMovement(Vector2 moveInput)
